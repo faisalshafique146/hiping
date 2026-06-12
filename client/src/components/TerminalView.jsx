@@ -27,7 +27,7 @@ const terminalTheme = {
   brightWhite: "#FFFFFF"
 };
 
-export default function TerminalView({ ws }) {
+export default function TerminalView({ ws, onDisconnect }) {
   const terminalRef = useRef(null);
 
   useEffect(() => {
@@ -74,9 +74,32 @@ export default function TerminalView({ ws }) {
     });
 
     const previousMessageHandler = ws.onmessage;
+    const previousCloseHandler = ws.onclose;
+    const previousErrorHandler = ws.onerror;
 
     ws.onmessage = (event) => {
-      terminal.write(String(event.data));
+      const raw = String(event.data);
+
+      try {
+        const payload = JSON.parse(raw);
+
+        if (payload?.type === "agent_disconnected") {
+          onDisconnect?.();
+          return;
+        }
+      } catch {
+        // Terminal data is raw text after pairing.
+      }
+
+      terminal.write(raw);
+    };
+
+    ws.onclose = () => {
+      onDisconnect?.();
+    };
+
+    ws.onerror = () => {
+      onDisconnect?.();
     };
 
     window.addEventListener("resize", syncSize);
@@ -86,9 +109,11 @@ export default function TerminalView({ ws }) {
       window.removeEventListener("resize", syncSize);
       dataDisposable.dispose();
       ws.onmessage = previousMessageHandler;
+      ws.onclose = previousCloseHandler;
+      ws.onerror = previousErrorHandler;
       terminal.dispose();
     };
-  }, [ws]);
+  }, [onDisconnect, ws]);
 
   return <div ref={terminalRef} style={{ width: "100%", height: "100%" }} />;
 }

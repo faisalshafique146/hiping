@@ -1,75 +1,168 @@
-import { WebSocketServer } from "ws";
+import { WebSocket } from "ws";
 import { createTerminal } from "./terminal.js";
 
-const PORT = 3000;
-const wss = new WebSocketServer({ port: PORT });
+const RELAY_URL = process.env.RELAY_URL || "ws://localhost:8080";
+const RECONNECT_DELAY_MS = 5000;
 
-let activeSession = null;
+let relay = null;
+let terminal = null;
+let reconnectTimer = null;
+let shuttingDown = false;
 
-wss.on("connection", (socket) => {
-  if (activeSession) {
-    socket.close(1008, "Only one client allowed");
+function formatCode(code) {
+  const digits = String(code).replace(/\D/g, "").padStart(6, "0").slice(0, 6).split("");
+  return `${digits.slice(0, 3).join(" ")} - ${digits.slice(3).join(" ")}`;
+}
+
+function printReadyCode(code) {
+  console.log("╔══════════════════════════╗");
+  console.log("║  HiPing is ready!        ║");
+  console.log(`║  Code: ${formatCode(code).padEnd(15)}║`);
+  console.log("║  Waiting for browser...  ║");
+  console.log("╚══════════════════════════╝");
+}
+
+function killTerminal() {
+  if (!terminal) {
     return;
   }
 
-  console.log("Client connected");
+  terminal.kill();
+  terminal = null;
+}
 
-  const terminal = createTerminal({ cols: 80, rows: 24 });
-  let cleanedUp = false;
+function cleanupRelay() {
+  if (!relay) {
+    return;
+  }
 
-  activeSession = { socket, terminal };
+  relay.removeAllListeners();
+  relay = null;
+}
 
-  const cleanup = () => {
-    if (cleanedUp) {
-      return;
-    }
+function scheduleReconnect() {
+  if (shuttingDown || reconnectTimer) {
+    return;
+  }
 
-    cleanedUp = true;
+  console.log("Relay disconnected. Reconnecting in 5s...");
 
-    if (activeSession?.socket === socket) {
-      activeSession = null;
-    }
+  reconnectTimer = setTimeout(() => {
+    reconnectTimer = null;
+    connectToRelay();
+  }, RECONNECT_DELAY_MS);
+}
 
-    terminal.kill();
-  };
+function startTerminal() {
+  if (terminal) {
+    return;
+  }
+
+  console.log("Browser connected! Starting terminal...");
+  terminal = createTerminal({ cols: 80, rows: 24 });
 
   terminal.onData((data) => {
-    if (socket.readyState === socket.OPEN) {
-      socket.send(String(data));
+    if (relay?.readyState === WebSocket.OPEN) {
+      relay.send(String(data));
     }
   });
 
   terminal.onExit(() => {
-    if (socket.readyState === socket.OPEN || socket.readyState === socket.CONNECTING) {
-      socket.close();
+    console.log("Terminal exited");
+    terminal = null;
+
+    if (relay?.readyState === WebSocket.OPEN || relay?.readyState === WebSocket.CONNECTING) {
+      relay.close();
     }
   });
+}
 
-  socket.on("message", (message) => {
-    const raw = message.toString();
+function handleRelayMessage(rawMessage) {
+  const message = typeof rawMessage === "string" ? rawMessage : rawMessage.toString();
 
-    try {
-      const payload = JSON.parse(raw);
+  try {
+    const payload = JSON.parse(message);
 
-      if (payload?.type === "resize") {
-        terminal.resize(payload.cols, payload.rows);
-        return;
-      }
-    } catch {
-      // Non-JSON payloads are treated as terminal input.
+    if (payload?.type === "code" && payload.code) {
+      printReadyCode(payload.code);
+      return;
     }
 
-    terminal.write(raw);
+    if (payload?.type === "browser_connected") {
+      startTerminal();
+      return;
+    }
+
+    if (payload?.type === "browser_disconnected") {
+      console.log("Browser disconnected. Waiting for new connection...");
+      killTerminal();
+      return;
+    }
+
+    if (payload?.type === "resize" && terminal) {
+      terminal.resize(payload.cols, payload.rows);
+      return;
+    }
+  } catch {
+    // Raw terminal input is forwarded as-is after pairing.
+  }
+
+  if (terminal) {
+    terminal.write(message);
+  }
+}
+
+function connectToRelay() {
+  if (shuttingDown) {
+    return;
+  }
+
+  cleanupRelay();
+
+  const socket = new WebSocket(RELAY_URL);
+  relay = socket;
+
+  socket.on("open", () => {
+    socket.send(JSON.stringify({ type: "register" }));
   });
 
-  socket.on("close", () => {
-    console.log("Client disconnected");
-    cleanup();
+  socket.on("message", (data) => {
+    handleRelayMessage(data);
   });
 
-  socket.on("error", () => {
-    cleanup();
-  });
-});
+  const handleDisconnect = () => {
+    if (relay !== socket) {
+      return;
+    }
 
-console.log(`WebSocket server listening on ws://localhost:${PORT}`);
+    killTerminal();
+    cleanupRelay();
+    scheduleReconnect();
+  };
+
+  socket.on("close", handleDisconnect);
+  socket.on("error", handleDisconnect);
+}
+
+function shutdown() {
+  shuttingDown = true;
+
+  if (reconnectTimer) {
+    clearTimeout(reconnectTimer);
+    reconnectTimer = null;
+  }
+
+  killTerminal();
+
+  if (relay?.readyState === WebSocket.OPEN || relay?.readyState === WebSocket.CONNECTING) {
+    relay.close();
+  }
+
+  cleanupRelay();
+  process.exit(0);
+}
+
+process.on("SIGINT", shutdown);
+process.on("SIGTERM", shutdown);
+
+connectToRelay();

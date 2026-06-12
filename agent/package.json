@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node index.js"
+  "start": "node --env-file=.env index.js",
+  "dev": "node --env-file=.env index.js"
   },
   "dependencies": {
     "node-pty": "1.1.0",
