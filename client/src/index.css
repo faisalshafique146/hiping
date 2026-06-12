@@ -1,0 +1,92 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  color-scheme: dark;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: #08080e;
+  color: #e8e8f0;
+  font-family: "Inter", sans-serif;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+.app-shell {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top, rgba(0, 212, 255, 0.12), transparent 35%),
+    linear-gradient(180deg, #0f0f1a 0%, #08080e 100%);
+}
+
+.app-shell-center {
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.status-stack {
+  display: grid;
+  gap: 20px;
+  justify-items: center;
+}
+
+.status-copy {
+  color: #8888a8;
+  font-family: "JetBrains Mono", "Cascadia Code", monospace;
+  font-size: 16px;
+  letter-spacing: 0.04em;
+}
+
+.reload-button {
+  border: 1px solid #ffffff18;
+  border-radius: 999px;
+  padding: 12px 20px;
+  background: linear-gradient(180deg, #1a1a2e 0%, #141422 100%);
+  color: #e8e8f0;
+  cursor: pointer;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease;
+}
+
+.reload-button:hover {
+  border-color: #00d4ff44;
+  box-shadow: 0 0 30px #00d4ff30;
+  transform: translateY(-1px);
+}
+
+.reload-button:focus-visible {
+  outline: 2px solid #00d4ff;
+  outline-offset: 3px;
+}
+
+.xterm {
+  height: 100%;
+}

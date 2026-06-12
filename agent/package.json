@@ -1,0 +1,13 @@
+{
+  "name": "hiping-agent",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node index.js"
+  },
+  "dependencies": {
+    "node-pty": "1.1.0",
+    "ws": "8.21.0"
+  }
+}

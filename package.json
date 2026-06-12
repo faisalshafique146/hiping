@@ -1,0 +1,13 @@
+{
+  "name": "hiping",
+  "private": true,
+  "workspaces": [
+    "agent",
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "dev:agent": "npm run -w agent dev",
+    "dev:server": "npm run -w server dev"
+  }
+}
