@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "./Landing.css";
+import brandLogo from "../assets/logo-transparent.png";
 
 const GITHUB_URL = "https://github.com";
 const INSTALL_COMMAND = "npm install -g hiping-agent";
@@ -62,8 +63,7 @@ export default function Landing() {
     <main className="landing-page">
       <header className="landing-nav">
         <Link className="landing-nav__logo" to="/">
-          <span>Hi</span>
-          <span>Ping</span>
+          <img src={brandLogo} alt="HiPing" />
         </Link>
 
         <nav className="landing-nav__links" aria-label="Primary">
@@ -228,8 +228,7 @@ export default function Landing() {
 
       <footer className="landing-footer">
         <Link className="landing-footer__logo" to="/">
-          <span>Hi</span>
-          <span>Ping</span>
+          <img src={brandLogo} alt="HiPing" />
         </Link>
         <div className="landing-footer__links">
           <a href={GITHUB_URL} target="_blank" rel="noreferrer">

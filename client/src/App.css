@@ -65,17 +65,16 @@ body::before {
 
 .connect-nav__logo {
   display: inline-flex;
-  gap: 0;
-  font: 700 1rem/1 var(--mono);
+  align-items: center;
   text-decoration: none;
 }
 
-.connect-nav__logo span:first-child {
-  color: var(--text);
-}
-
-.connect-nav__logo span:last-child {
-  color: var(--cyan);
+.connect-nav__logo img {
+  display: block;
+  width: auto;
+  height: clamp(40px, 6vw, 52px);
+  max-width: min(52vw, 220px);
+  object-fit: contain;
 }
 
 .app-backlink {
@@ -391,6 +390,16 @@ body::before {
 }
 
 @media (max-width: 640px) {
+  .connect-nav {
+    height: 60px;
+    padding: 0 16px;
+  }
+
+  .connect-nav__logo img {
+    height: clamp(36px, 10vw, 44px);
+    max-width: min(56vw, 190px);
+  }
+
   .connect-screen {
     padding-inline: 16px;
   }

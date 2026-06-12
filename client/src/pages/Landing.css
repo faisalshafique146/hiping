@@ -69,17 +69,19 @@ body::before {
 .landing-nav__logo,
 .landing-footer__logo {
   display: inline-flex;
-  font: 700 1rem/1 var(--mono);
+  align-items: center;
   text-decoration: none;
 }
 
-.landing-nav__logo span:first-child,
-.landing-footer__logo span:first-child {
-  color: var(--text);
+.landing-nav__logo img,
+.landing-footer__logo img {
+  display: block;
+  width: auto;
+  height: clamp(42px, 6vw, 56px);
+  max-width: min(56vw, 260px);
+  object-fit: contain;
 }
 
-.landing-nav__logo span:last-child,
-.landing-footer__logo span:last-child,
 .section-title span {
   color: var(--cyan);
 }
@@ -557,6 +559,17 @@ body::before {
 }
 
 @media (max-width: 720px) {
+  .landing-nav {
+    height: 64px;
+    padding: 0 16px;
+  }
+
+  .landing-nav__logo img,
+  .landing-footer__logo img {
+    height: clamp(38px, 11vw, 48px);
+    max-width: min(64vw, 220px);
+  }
+
   .hero-section,
   .how-section,
   .cta-section,

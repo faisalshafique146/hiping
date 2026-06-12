@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import "./App.css";
 import TerminalView from "./components/TerminalView.jsx";
+import brandLogo from "./assets/logo-transparent.png";
 
 const RELAY_URL = import.meta.env.VITE_RELAY_URL || "ws://localhost:8080";
 const DIGIT_COUNT = 6;
@@ -335,8 +336,7 @@ export default function App() {
     <main className="app connect-screen">
       <header className="connect-nav">
         <Link className="connect-nav__logo" to="/">
-          <span>Hi</span>
-          <span>Ping</span>
+          <img src={brandLogo} alt="HiPing" />
         </Link>
 
         <Link className="app-backlink" to="/">

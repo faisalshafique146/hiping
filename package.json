@@ -8,6 +8,8 @@
   ],
   "scripts": {
     "dev:agent": "npm run -w agent dev",
-    "dev:server": "npm run -w server dev"
+    "dev:server": "npm run -w server dev",
+    "dev:client": "npm run -w client dev",
+    "dev": "node scripts/dev-all.mjs"
   }
 }
