@@ -34,7 +34,7 @@ body::before {
 .app {
   position: relative;
   width: 100vw;
-  height: 100vh;
+  min-height: 100vh;
   background:
     radial-gradient(circle at top, var(--cyan-dim), transparent 38%),
     linear-gradient(180deg, var(--bg2) 0%, var(--bg) 100%);
@@ -55,6 +55,7 @@ body::before {
   z-index: 100;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   height: 56px;
   padding: 0 24px;
   border-bottom: 1px solid var(--border);
@@ -66,6 +67,7 @@ body::before {
   display: inline-flex;
   gap: 0;
   font: 700 1rem/1 var(--mono);
+  text-decoration: none;
 }
 
 .connect-nav__logo span:first-child {
@@ -73,6 +75,17 @@ body::before {
 }
 
 .connect-nav__logo span:last-child {
+  color: var(--cyan);
+}
+
+.app-backlink {
+  color: var(--muted);
+  text-decoration: none;
+  font: 500 0.78rem/1 var(--mono);
+  transition: color 160ms ease;
+}
+
+.app-backlink:hover {
   color: var(--cyan);
 }
 
@@ -254,6 +267,8 @@ body::before {
 .app-terminal {
   display: flex;
   flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .terminal-topbar {
@@ -335,6 +350,12 @@ body::before {
   gap: 12px;
   padding: 24px;
   text-align: center;
+}
+
+.error-screen__nav {
+  position: absolute;
+  top: 20px;
+  left: 24px;
 }
 
 .error-screen__icon {

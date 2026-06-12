@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import "./App.css";
 import TerminalView from "./components/TerminalView.jsx";
 
@@ -288,6 +289,9 @@ export default function App() {
       <main className="app app-terminal">
         <header className="terminal-topbar">
           <div className="terminal-topbar__left">
+            <Link className="app-backlink" to="/">
+              Back to Home
+            </Link>
             <div className="code-badge">
               code: <span>{formatDisplayCode(session.code)}</span>
             </div>
@@ -312,6 +316,11 @@ export default function App() {
   if (screen === "error") {
     return (
       <main className="app error-screen">
+        <div className="error-screen__nav">
+          <Link className="app-backlink" to="/">
+            Back to Home
+          </Link>
+        </div>
         <div className="error-screen__icon">x</div>
         <h1 className="error-screen__title">Connection lost</h1>
         <p className="error-screen__message">{terminalError}</p>
@@ -325,10 +334,14 @@ export default function App() {
   return (
     <main className="app connect-screen">
       <header className="connect-nav">
-        <div className="connect-nav__logo">
+        <Link className="connect-nav__logo" to="/">
           <span>Hi</span>
           <span>Ping</span>
-        </div>
+        </Link>
+
+        <Link className="app-backlink" to="/">
+          Back to Home
+        </Link>
       </header>
 
       <section className="connect-panel">
