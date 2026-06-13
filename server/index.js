@@ -1,6 +1,6 @@
 import { WebSocket, WebSocketServer } from "ws";
 
-const PORT = 8080;
+const PORT = process.env.PORT || 8080
 const sessions = new Map();
 const wss = new WebSocketServer({ port: PORT });
 

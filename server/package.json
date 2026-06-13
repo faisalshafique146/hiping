@@ -1,12 +1,17 @@
 {
   "name": "hiping-server",
   "version": "1.0.0",
-  "private": true,
   "type": "module",
+  "description": "HiPing relay server",
+  "main": "index.js",
   "scripts": {
-    "dev": "node index.js"
+    "dev": "node index.js",
+    "start": "node index.js"
   },
   "dependencies": {
     "ws": "8.21.0"
+  },
+  "engines": {
+    "node": "22"
   }
 }
